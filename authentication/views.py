@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View
 from . import forms
 
 
+# Définition de la vue par une classe
 class LoginPageView(View):
     template_name = "authentication/login.html"
     form_class = forms.LoginForm
@@ -31,6 +33,7 @@ class LoginPageView(View):
         )
 
 
+# Définition de la même vue par une fonction
 # def login_page(request):
 #     form = forms.LoginForm()
 #     message = ""
@@ -55,3 +58,14 @@ class LoginPageView(View):
 def logout_user(request):
     logout(request)
     return redirect("login")
+
+
+def signup_page(request):
+    form = forms.SignUpForm()
+    if request.method == "POST":
+        form = forms.SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect(settings.LOGIN_REDIRECT_URL)
+    return render(request, "authentication/signup.html", {"form": form})

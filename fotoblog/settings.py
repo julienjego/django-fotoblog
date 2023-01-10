@@ -88,17 +88,13 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 8,
+        },
     },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "authentication.validators.ContainsLetterValidator"},
+    {"NAME": "authentication.validators.ContainsNumberValidator"},
 ]
 
 # Use personalized User
@@ -129,5 +125,8 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # URL for login
-
 LOGIN_URL = "login"
+
+# Home redirect URL
+
+LOGIN_REDIRECT_URL = "home"
