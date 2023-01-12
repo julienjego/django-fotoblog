@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import formset_factory
+from django.core.paginator import Paginator
 from . import forms, models
 
 
@@ -18,7 +19,13 @@ class HomeView(LoginRequiredMixin, View):
             key=lambda instance: instance.date_created,
             reverse=True,
         )
-        return render(request, "blog/home.html", {"blogs_and_photos": blogs_and_photos})
+
+        paginator = Paginator(blogs_and_photos, 3)
+
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        context = {"page_obj": page_obj}
+        return render(request, "blog/home.html", context=context)
 
 
 @login_required
