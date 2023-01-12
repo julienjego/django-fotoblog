@@ -1,3 +1,4 @@
+from itertools import chain
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import View
@@ -8,9 +9,22 @@ from . import forms, models
 
 class HomeView(LoginRequiredMixin, View):
     def get(self, request):
-        photos = models.Photo.objects.all()
-        blogs = models.Blog.objects.all()
-        return render(request, "blog/home.html", {"photos": photos, "blogs": blogs})
+        blogs = models.Blog.objects.filter(contributors__in=request.user.follows.all())
+        photos = models.Photo.objects.filter(
+            uploader__in=request.user.follows.all()
+        ).exclude(blog__in=blogs)
+        blogs_and_photos = sorted(
+            chain(blogs, photos),
+            key=lambda instance: instance.date_created,
+            reverse=True,
+        )
+        return render(request, "blog/home.html", {"blogs_and_photos": blogs_and_photos})
+
+
+@login_required
+def photo_feed(request):
+    photos = models.Photo.objects.filter(uploader__in=request.user.follows.all())
+    return render(request, "blog/photo_feed.html", {"photos": photos})
 
 
 @login_required

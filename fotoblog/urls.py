@@ -45,6 +45,7 @@ urlpatterns = [
         name="create_multiple_photos",
     ),
     path("follow-users/", blog.views.follow_users, name="follow_users"),
+    path("photo-feed/", blog.views.photo_feed, name="photo_feed"),
 ]
 
 if settings.DEBUG:
